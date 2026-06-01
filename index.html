@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>mensive ketiga — untuk rara</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        body {
+            background: #0f0505;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        .particle-bg { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; overflow:hidden; }
+        .particle { position:absolute; background:rgba(210,100,100,0.4); border-radius:50%; animation:floatParticle linear infinite; }
+        @keyframes floatParticle {
+            0%   { transform:translateY(100vh) rotate(0deg); opacity:0; }
+            10%  { opacity:0.6; }
+            90%  { opacity:0.6; }
+            100% { transform:translateY(-20vh) rotate(360deg); opacity:0; }
+        }
+        .floating-heart-bg {
+            position: fixed;
+            bottom: 0;
+            font-size: 1rem;
+            pointer-events: none;
+            z-index: 1;
+            animation: floatHeart 7s linear forwards;
+            color: #e68a8a;
+            opacity: 0.6;
+        }
+        @keyframes floatHeart {
+            0%   { transform:translateY(0) scale(0.6); opacity:0.6; }
+            100% { transform:translateY(-100vh) scale(1.1); opacity:0; }
+        }
+        .flying-love {
+            position: fixed;
+            font-size: 1.5rem;
+            pointer-events: none;
+            z-index: 100;
+            animation: flyLove 1.5s ease-out forwards;
+            color: #ff6b6b;
+        }
+        @keyframes flyLove {
+            0% { transform: translateY(0) scale(0.5); opacity: 1; }
+            100% { transform: translateY(-150px) scale(1.2); opacity: 0; }
+        }
+        .app-container { width:100%; max-width:420px; margin:0 auto; position:relative; z-index:10; }
+        .card {
+            background:rgba(26,12,12,0.92);
+            backdrop-filter:blur(18px);
+            border-radius:2rem;
+            padding:1.6rem 1.3rem;
+            box-shadow:0 25px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(200,80,80,0.3);
+            border:1px solid rgba(210,100,100,0.2);
+        }
+        .progress-container { margin-bottom:20px; }
+        .progress-bar-bg { background:#2f1616; border-radius:20px; height:5px; width:100%; overflow:hidden; }
+        .progress-fill { background:#e68a8a; width:0%; height:100%; border-radius:20px; transition:width 0.3s ease; }
+        .step-text { display:flex; justify-content:space-between; font-size:0.65rem; color:#c28a8a; margin-top:6px; }
+
+        .pin-display { background:#1e0b0b; border-radius:50px; padding:12px; text-align:center; letter-spacing:10px; font-size:1.8rem; font-weight:600; color:#f3bfbf; margin:12px 0; border:1px solid #ad5a5a; }
+        .keypad { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:18px 0; }
+        .key { background:#2d1515; border:1px solid #a85555; border-radius:60px; padding:14px 0; font-size:1.4rem; font-weight:600; color:#f5cfcf; text-align:center; cursor:pointer; box-shadow:0 2px 0 #4a2424; transition:0.05s linear; }
+        .key:active { transform:scale(0.94); background:#a14242; }
+
+        .btn-next { background:#a14242; border:none; padding:14px; border-radius:60px; font-weight:600; color:white; width:100%; font-size:0.9rem; cursor:pointer; margin-top:16px; transition:0.07s; }
+        .btn-next:active { transform:scale(0.96); }
+
+        .memory-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:20px 0; }
+        .memory-card { aspect-ratio:1/1; background:#4f2626; border-radius:1.3rem; display:flex; align-items:center; justify-content:center; cursor:pointer; border:1px solid #b26b6b; transition:0.1s; }
+        .memory-card.flipped, .memory-card.matched { background:#f5e2d4; }
+        .memory-card.matched { background:#634040; opacity:0.6; cursor:default; pointer-events:none; }
+
+        .love-letter-small { background:rgba(200,100,100,0.15); border-left:3px solid #e68a8a; padding:12px; border-radius:1rem; margin:16px 0; font-size:0.8rem; font-style:italic; color:#f0cfcf; }
+        .love-letter-full { background:rgba(20,8,8,0.75); border-radius:1.5rem; padding:1.2rem; font-size:0.9rem; line-height:1.65; color:#f2dbdb; max-height:380px; overflow-y:auto; }
+
+        .tebak-title { text-align:center; font-size:0.85rem; color:#c28a8a; margin-bottom:6px; }
+        .tebak-clue { background:rgba(200,100,100,0.12); border:1px solid #6b2a2a; border-radius:14px; padding:12px 14px; margin:12px 0; font-size:0.82rem; color:#f0cfcf; text-align:center; line-height:1.5; }
+        .tebak-clue strong { color:#e68a8a; }
+        .kotak-wrap { display:flex; gap:8px; justify-content:center; margin:6px 0; flex-wrap:wrap; }
+        .kotak { width:38px; height:46px; border-radius:10px; background:#2d1515; border:2px solid #6b2a2a; display:flex; align-items:center; justify-content:center; font-size:1.2rem; font-weight:700; color:#f5cfcf; transition:all 0.2s; }
+        .kotak.filled   { border-color:#e68a8a; background:#3d1a1a; }
+        .huruf-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin:10px 0; }
+        .huruf-btn { background:#2d1515; border:1px solid #6b2a2a; border-radius:8px; padding:10px 4px; font-size:0.75rem; font-weight:600; color:#f5cfcf; cursor:pointer; text-align:center; transition:0.1s; }
+        .huruf-btn:active { transform:scale(0.93); }
+        .huruf-btn.del-btn, .huruf-btn.ok-btn { grid-column:span 2; font-size:0.7rem; }
+        .tebak-msg  { text-align:center; font-size:0.8rem; color:#e68a8a; min-height:1.2rem; margin:6px 0; }
+        .tebak-info { display:flex; justify-content:space-between; font-size:0.7rem; color:#8a5a5a; margin:4px 0; }
+
+        .puzzle-prog { font-size:0.7rem; color:#8a5a5a; text-align:center; margin-bottom:8px; }
+        .puzzle-hint { font-size:0.7rem; color:#e68a8a; text-align:center; margin-bottom:12px; font-style:italic; }
+        .kata-bank { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px; min-height:50px; justify-content:center; }
+        .kata-chip { background:#3d1a1a; border:1px solid #8a4a4a; border-radius:24px; padding:8px 16px; font-size:0.8rem; color:#f5cfcf; cursor:pointer; transition:all 0.15s; font-weight:500; }
+        .kata-chip:active { transform:scale(0.93); background:#a14242; }
+        .kata-chip.used { opacity:0.2; pointer-events:none; }
+        .jawaban-area { background:#1e0b0b; border-radius:16px; border:1px solid #6b2a2a; padding:14px; min-height:70px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:12px; }
+        .jawaban-kata { background:#a14242; border-radius:24px; padding:7px 14px; font-size:0.8rem; color:#fff; cursor:pointer; font-weight:500; transition:0.12s; }
+        .jawaban-kata:active { transform:scale(0.93); background:#6b2424; }
+        .puzzle-feedback { text-align:center; font-size:0.82rem; min-height:1.4rem; margin:8px 0; }
+        .puzzle-feedback.ok { color:#8ae8a8; }
+        .puzzle-feedback.no { color:#e88a8a; }
+
+        .click-game-area { text-align:center; margin:16px 0; }
+        .click-target { background:#a14242; border-radius:60px; padding:24px; font-size:1.5rem; font-weight:700; color:white; cursor:pointer; transition:0.05s; margin:20px 0; box-shadow:0 5px 0 #4a2424; }
+        .click-target:active { transform:scale(0.96); }
+        .click-score { font-size:0.9rem; color:#e6b8b8; margin:12px 0; }
+
+        .gallery-scroll { display:flex; overflow-x:auto; gap:16px; padding:16px 4px; margin:16px 0; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; }
+        .gallery-item   { scroll-snap-align:start; min-width:200px; background:#2c1616; border-radius:1.2rem; overflow:hidden; text-align:center; border:1px solid #b26b6b; }
+        .gallery-item img { width:100%; height:200px; object-fit:cover; }
+        .gallery-caption  { padding:8px; font-size:0.7rem; color:#e6b8b8; }
+
+        .envelope { background:#5c2e2e; border-radius:1.2rem; padding:30px 20px; text-align:center; cursor:pointer; margin:16px 0; box-shadow:0 5px 0 #3a1a1a; }
+        .envelope:active { transform:scale(0.97); }
+        .letter-content { background:#2c1616; border-radius:1rem; padding:16px; margin-top:16px; border-left:3px solid #e68a8a; font-size:0.8rem; line-height:1.65; color:#f2dbdb; max-height:320px; overflow-y:auto; }
+
+        .feedback  { font-size:0.75rem; color:#e6b8b8; margin-top:8px; text-align:center; }
+        .hidden    { display:none !important; }
+        .fade-in   { animation:fadeIn 0.4s ease; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);} }
+        .small-note { font-size:0.7rem; color:#bc8a8a; text-align:center; margin-top:12px; }
+    </style>
+</head>
+<body>
+<div class="particle-bg" id="particleBg"></div>
+<div class="app-container" id="appRoot"></div>
+<script>
+const correctPin = "280226";
+let currentChapter = 0;
+let enteredPin = "";
+let musicStarted = false;
+let chapterFlags = {};
+
+// MEMORY MATCH - foto berbeda untuk pasangan yang benar
+const cardDataRaw = [
+    { name:"Rara", pairId:1, imgUrl:"r3.jpeg" },
+    { name:"Kamu", pairId:1, imgUrl:"r3.jpeg" },
+    { name:"Rara", pairId:2, imgUrl:"r5.jpeg" },
+    { name:"Kamu", pairId:2, imgUrl:"r5.jpeg" }
+];
+
+// GALLERY
+const galleryPhotos = [
+    { url:"r1.jpeg", caption:"kamu cantik" },
+    { url:"r2.jpeg", caption:"belahan jiwaku" },
+    { url:"r4.jpeg", caption:"separuh nafasku" },
+    { url:"r6.jpeg", caption:"sayangku" }
+];
+
+// ========== MUSIC MP3 ==========
+let audio = null;
+
+function loadMusic() {
+    audio = new Audio('lagu.mp3');
+    audio.loop = true;
+    audio.volume = 0.7;
+}
+
+function forcePlayMusic() {
+    if (audio && !musicStarted) {
+        audio.play().then(() => {
+            musicStarted = true;
+        }).catch(err => {
+            console.log('autoplah butuh klik dulu', err);
+        });
+    }
+}
+
+loadMusic();
+// ===============================
+
+function shuffleArray(arr) {
+    for (let i=arr.length-1;i>0;i--) {
+        const j=Math.floor(Math.random()*(i+1));
+        [arr[i],arr[j]]=[arr[j],arr[i]];
+    }
+    return arr;
+}
+function updateProgress() {
+    const total=11, percent=(currentChapter/(total-1))*100;
+    const fill=document.querySelector('.progress-fill');
+    if(fill) fill.style.width=percent+'%';
+    const s=document.querySelector('.step-text span');
+    if(s) s.innerText=`${currentChapter+1}/${total}`;
+}
+function nextChapter() {
+    if(chapterFlags[currentChapter]!==true) return;
+    if(currentChapter<10){ currentChapter++; renderChapter(); }
+}
+function createParticles() {
+    const c=document.getElementById('particleBg');
+    for(let i=0;i<70;i++){
+        const p=document.createElement('div'); p.classList.add('particle');
+        const size=Math.random()*5+2;
+        p.style.width=size+'px'; p.style.height=size+'px';
+        p.style.left=Math.random()*100+'%';
+        p.style.animationDuration=Math.random()*8+5+'s';
+        p.style.animationDelay=Math.random()*10+'s';
+        p.style.background=`rgba(200,80,80,${Math.random()*0.5+0.2})`;
+        c.appendChild(p);
+    }
+}
+createParticles();
+function createHeart() {
+    const h=document.createElement('div'); h.classList.add('floating-heart-bg');
+    h.innerHTML='<i class="fas fa-heart"></i>';
+    h.style.left=Math.random()*100+'%';
+    h.style.fontSize=Math.random()*14+10+'px';
+    h.style.animationDuration=Math.random()*5+4+'s';
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),7000);
+}
+setInterval(()=>{ if(currentChapter>0&&currentChapter<10) createHeart(); },1900);
+
+let gameCards,cardElements,flippedIdx,lockBoard,matchedPairs;
+
+function renderChapter() {
+    const app=document.getElementById('appRoot');
+    if      (currentChapter===0)  renderPin(app);
+    else if (currentChapter===1)  renderOpening(app);
+    else if (currentChapter===2)  renderMemoryMatch(app);
+    else if (currentChapter===3)  renderLoveNote(app);
+    else if (currentChapter===4)  renderTebakKata(app);
+    else if (currentChapter===5)  renderPuzzleKalimat(app);
+    else if (currentChapter===6)  renderEnvelopeLetter(app);
+    else if (currentChapter===7)  renderClickLoveGame(app);
+    else if (currentChapter===8)  renderGalleryScroll(app);
+    else if (currentChapter===9)  renderFinalLetter(app);
+    else if (currentChapter===10) renderClosing(app);
+    updateProgress();
+}
+
+/* PIN */
+function renderPin(app) {
+    app.innerHTML=`
+    <div class="card fade-in">
+      <div class="progress-container">
+        <div class="progress-bar-bg"><div class="progress-fill"></div></div>
+        <div class="step-text"><span>1/11</span><i class="fas fa-lock"></i></div>
+      </div>
+      <div style="text-align:center;">
+        <i class="fas fa-heart" style="font-size:2.5rem;color:#e68a8a;margin-bottom:10px;display:block;"></i>
+        <h3 style="margin:8px 0;color:#ffffff;font-weight:500;font-size:1.1rem;">Enter PIN</h3>
+      </div>
+      <div class="pin-display" id="pinDisplay">●●●●●●</div>
+      <div class="keypad" id="keypad"></div>
+      <div id="pinErr" class="feedback"></div>
+    </div>`;
+    const keys=['1','2','3','4','5','6','7','8','9','del','0','go'];
+    const keypadDiv=document.getElementById('keypad');
+    keys.forEach(k=>{
+        const btn=document.createElement('div');
+        btn.className='key';
+        if(k==='del') btn.innerHTML='<i class="fas fa-backspace"></i>';
+        else if(k==='go') btn.innerHTML='<span style="font-size:1rem;font-weight:700;">GO!</span>';
+        else btn.innerText=k;
+        btn.addEventListener('click',()=>handlePin(k));
+        keypadDiv.appendChild(btn);
+    });
+    const handlePin=(val)=>{
+        if(val==='del') enteredPin=enteredPin.slice(0,-1);
+        else if(val==='go') submitPin();
+        else if(enteredPin.length<6) enteredPin+=val;
+        document.getElementById('pinDisplay').innerText=enteredPin.padEnd(6,'●').slice(0,6);
+    };
+    window.submitPin=()=>{
+        if(enteredPin===correctPin){ forcePlayMusic(); chapterFlags[0]=true; nextChapter(); }
+        else{
+            document.getElementById('pinErr').innerText='kode salah sayang';
+            enteredPin='';
+            document.getElementById('pinDisplay').innerText='●●●●●●';
+        }
+    };
+}
+
+/* OPENING */
+function renderOpening(app) {
+    app.innerHTML=`
+    <div class="card fade-in">
+      <div class="progress-container">
+        <div class="progress-bar-bg"><div class="progress-fill"></div></div>
+        <div class="step-text"><span>2/11</span><i class="fas fa-heart"></i></div>
+      </div>
+      <p style="text-align:center;font-size:1.2rem;font-weight:600;color:#ffffff;">hai, belahan jiwaku.</p>
+      <p style="text-align:center;margin-top:14px;color:#ffffff;font-size:0.88rem;line-height:1.75;">
+        happy 3 months sayang, selamat buat kita karna udah mau bertahan di hubungan ini,
+        walaupun banyak hal yang ngebuat aku sama kamu capek.
+        aku mau ucapin banyak terimakasih ke perempuan hebat yang udah mau stay
+        di 3 bulan terakhir sama aku. oh, atau 5 bulan dihitung pas kita masih
+        just friends itu? hahaha jk. aku ga nyangka sih bisa secepet ini ketemu
+        tanggal 28 ini lagi. thank u so much sayang karna udah mau selalu ngertiin
+        aku kapan pun dan di situasi apapun.
+      </p>
+      <button class="btn-next" id="openBtn">lanjutkan</button>
+    </div>`;
+    document.getElementById('openBtn').onclick=()=>{ chapterFlags[1]=true; nextChapter(); };
+}
+
+/* MEMORY MATCH */
+function renderMemoryMatch(app) {
+    gameCards=shuffleArray([...cardDataRaw].map(c=>({...c,matched:false})));
+    matchedPairs=0; flippedIdx=[]; lockBoard=false;
+    app.innerHTML=`
+    <div class="card fade-in">
+      <div class="progress-container">
+        <div class="progress-bar-bg"><div class="progress-fill"></div></div>
+        <div class="step-text"><span>3/11</span><i class="fas fa-id-card"></i></div>
+      </div>
+      <p style="text-align:center;font-size:0.88rem;color:#f0cfcf;">
+        main game dulu ya, cocokkan foto cantikmu itu dengan benar
+      </p>
+      <div class="memory-grid" id="memGrid"></div>
+      <div class="feedback" id="memStatus">0/2 pasangan</div>
+      <button class="btn-next hidden" id="memNext">haha good sayang, pinter. lanjut game berikutnya yuk</button>
+    </div>`;
+    const grid=document.getElementById('memGrid'); cardElements=[];
+    gameCards.forEach((card,idx)=>{
+        const div=document.createElement('div');
+        div.className='memory-card'; div.innerText='?';
+        div.addEventListener('click',()=>onCardClick(idx));
+        grid.appendChild(div); cardElements.push(div);
+    });
+    function flipCard(idx,show){
+        if(show&&!gameCards[idx].matched){
+            cardElements[idx].innerHTML=`<img src="${gameCards[idx].imgUrl}" style="width:80%;height:80%;object-fit:cover;border-radius:1rem;">`;
+            cardElements[idx].classList.add('flipped');
+        } else if(!gameCards[idx].matched){
+            cardElements[idx].innerHTML='?';
+            cardElements[idx].classList.remove('flipped');
+        }
+    }
+    function checkMatch(){
+        const a=flippedIdx[0],b=flippedIdx[1];
+        if(gameCards[a].pairId===gameCards[b].pairId){
+            gameCards[a].matched=true; gameCards[b].matched=true;
+            cardElements[a].classList.add('matched'); cardElements[b].classList.add('matched');
+            matchedPairs++;
+            document.getElementById('memStatus').innerText=`${matchedPairs}/2 pasangan`;
+            resetTurn();
+            if(matchedPairs===2) document.getElementById('memNext').classList.remove('hidden');
+        } else { setTimeout(()=>{ flipCard(a,false); flipCard(b,false); resetTurn(); },700); }
+    }
+    function resetTurn(){ flippedIdx=[]; lockBoard=false; }
+    window.onCardClick=(idx)=>{
+        if(lockBoard||gameCards[idx].matched||flippedIdx.includes(idx)||flippedIdx.length===2) return;
+        flipCard(idx,true); flippedIdx.push(idx);
+        if(flippedIdx.length===2){ lockBoard=true; checkMatch(); }
+    };
+    document.getElementById('memNext').onclick=()=>{ chapterFlags[2]=true; nextChapter(); };
+}
+
+/* LOVE NOTE */
+function renderLoveNote(app) {
+    app.innerHTML=`
+    <div class="card fade-in">
+      <div class="progress-container">
+        <div class="progress-bar-bg"><div class="progress-fill"></div></div>
+        <div class="step-text"><span>4/11</span><i class="fas fa-feather"></i></div>
+      </div>
+      <div class="love-letter-small">
+        <i class="fas fa-heart" style="color:#e68a8a;"></i>
+        bentar sebelum game lagi iklan kata-kata ku dulu ya, karna di 3 bulan ini yang ngasih gift dan kata-kata cuma kamu, aku ngerasa kaya bersalah gabisa ngasih apa-apa ke kamu. aku cuma mau ucapin terimakasih sekali lagi karna kamu selalu rayain mensive kita dengan gift yang kamu kasih ke aku. aku setiap mensive itu selalu bingung mau ngasih apa ke kamu. selalu gabisa rencanain nya karna jujur aku gapernah buatin kaya gini.. i want to hug u rn sayang, cium kamu, living together, tidur bareng kamu kaya mbul yang selalu nempel sama kamu. kayanya kalo udah living together aku kaya mbul deh hahaa yang selalu nempel ke kamu. makasih udah capek capek bikinin gift buat aku, dan aku mau tetep dikasih gift yang sama di next month, year, abad maybe? wkwkwkk mau liat kamu bucinin aku terus setiap tanggal 28.
+      </div>
+      <button class="btn-next" id="noteBtn">lanjut</button>
+    </div>`;
+    document.getElementById('noteBtn').onclick=()=>{ chapterFlags[3]=true; nextChapter(); };
+}
+
+/* TEBAK KATA */
+function renderTebakKata(app) {
+    const daftarKata = [
+        { kata:'CANTIK', hint:'1 kata 6 huruf yang gambarin kamu' },
+        { kata:'NYAMAN', hint:'hal yang ngebuat aku selalu pengen living together sama kamu, karna kamu terlalu apa?' },
+        { kata:'TAMBANG', hint:'aku kalo gede pengen banget jadi apa ya? (ketik nama bidangnya aja)' },
+        { kata:'CIUM',   hint:'kata yang selalu keluar kalo kamu kirim pap' },
+    ];
+
+    let soalIdx = 0;
+    let currentGuess = '';
+    let gameOver = false;
+
+    function target() { return daftarKata[soalIdx].kata; }
+    function maxLen() { return target().length; }
+
+    function buildUI() {
+        app.innerHTML=`
+        <div class="card fade-in">
+          <div class="progress-container">
+            <div class="progress-bar-bg"><div class="progress-fill"></div></div>
+            <div class="step-text"><span>5/11</span><i class="fas fa-spell-check"></i></div>
+          </div>
+          <p class="tebak-title">🔤 tebak kata — ${soalIdx+1} dari ${daftarKata.length}</p>
+          <div class="tebak-clue">petunjuk: <strong id="tkClue">${daftarKata[soalIdx].hint}</strong></div>
+          <div class="tebak-info">
+            <span id="tkLen">${maxLen()} huruf</span>
+          </div>
+          <div id="tkBoard"></div>
+          <div class="tebak-msg" id="tkMsg"></div>
+          <div class="huruf-grid" id="tkKeyboard"></div>
+          <button class="btn-next hidden" id="tkNext">lanjut</button>
+        </div>`;
+        renderBoard();
+        renderKeyboard();
+        document.getElementById('tkNext').onclick=()=>{ chapterFlags[4]=true; nextChapter(); };
+    }
+
+    function renderBoard() {
+        const b=document.getElementById('tkBoard'); if(!b) return;
+        let html='<div class="kotak-wrap">';
+        for(let c=0;c<maxLen();c++){
+            let cls='kotak';
+            const ch=currentGuess[c]||'';
+            if(ch) cls+=' filled';
+            html+=`<div class="${cls}">${ch}</div>`;
+        }
+        html+='</div>';
+        b.innerHTML=html;
+    }
+
+    function renderKeyboard() {
+        const kb=document.getElementById('tkKeyboard'); if(!kb) return;
+        const rows=['QWERTYUIOP','ASDFGHJKL','ZXCVBNM'];
+        let html='';
+        rows.forEach(row=>row.split('').forEach(ch=>{
+            html+=`<div class="huruf-btn" onclick="tkInput('${ch}')">${ch}</div>`;
+        }));
+        html+=`<div class="huruf-btn del-btn" onclick="tkDel()">⌫ DEL</div>`;
+        html+=`<div class="huruf-btn ok-btn" onclick="tkSubmit()">✓ OK</div>`;
+        kb.innerHTML=html;
+    }
+
+    window.tkInput=(ch)=>{
+        if(gameOver||currentGuess.length>=maxLen()) return;
+        currentGuess+=ch; renderBoard();
+    };
+    window.tkDel=()=>{
+        if(gameOver) return;
+        currentGuess=currentGuess.slice(0,-1); renderBoard();
+    };
+    window.tkSubmit=()=>{
+        if(gameOver) return;
+        if(currentGuess.length<maxLen()){
+            document.getElementById('tkMsg').textContent=`kata harus ${maxLen()} huruf!`;
+            const b=document.getElementById('tkBoard'); b.classList.add('shake');
+            setTimeout(()=>b.classList.remove('shake'),350);
+            return;
+        }
+        const isCorrect = (currentGuess === target());
+        if(isCorrect){
+            gameOver=true;
+            document.getElementById('tkMsg').textContent='🎉 bener! pinter banget sayang 🎉';
+            if(soalIdx < daftarKata.length-1){
+                setTimeout(()=>{
+                    soalIdx++;
+                    currentGuess='';
+                    gameOver=false;
+                    buildUI();
+                },1200);
+            } else {
+                chapterFlags[4]=true;
+                document.getElementById('tkNext').classList.remove('hidden');
+            }
+        } else {
+            document.getElementById('tkMsg').textContent='salah, coba lagi!';
+            currentGuess='';
+            renderBoard();
+            const b=document.getElementById('tkBoard'); b.classList.add('shake');
+            setTimeout(()=>b.classList.remove('shake'),350);
+        }
+    };
+    buildUI();
+}
+
+/* PUZZLE KALIMAT */
+function renderPuzzleKalimat(app) {
+    const puzzles = [
+        { kalimat: ["you're", "enough", "so", "don't", "be", "sad"], hint: "pesan untukmu: jangan bersedih, kamu sudah cukup ❤️" },
+        { kalimat: ["always", "remember", "that", "you", "matter"], hint: "kamu berharga, ingat itu selalu ✨" },
+        { kalimat: ["everything", "is", "going", "to", "be", "okay"], hint: "semua akan baik-baik saja, percayalah 🌤️" }
+    ];
+
+    let pIdx = 0;
+    let bankArr = [];
+    let jawabanArr = [];
+
+    function startPuzzle() {
+        const p = puzzles[pIdx];
+        const shuffled = shuffleArray(p.kalimat.map((w, i) => ({ word: w, idx: i })));
+        bankArr = shuffled.map(item => ({ ...item, used: false }));
+        jawabanArr = [];
+        renderPuzzle();
+    }
+
+    function renderPuzzle() {
+        const p = puzzles[pIdx];
+        app.innerHTML = `
+        <div class="card fade-in">
+          <div class="progress-container">
+            <div class="progress-bar-bg"><div class="progress-fill"></div></div>
+            <div class="step-text"><span>6/11</span><i class="fas fa-puzzle-piece"></i></div>
+          </div>
+          <p style="text-align:center;font-size:0.9rem;color:#f0cfcf;margin-bottom:4px;">🧩 susun kalimat</p>
+          <div class="puzzle-prog">soal ${pIdx+1} dari ${puzzles.length}</div>
+          <div class="puzzle-hint">💬 ${p.hint}</div>
+          <div class="jawaban-area" id="jawabanArea"></div>
+          <p style="font-size:0.65rem;color:#6a3a3a;text-align:center;margin-bottom:8px;">↑ klik kata untuk membatalkan</p>
+          <div class="kata-bank" id="kataBank"></div>
+          <div class="puzzle-feedback" id="pFeedback"></div>
+          <button class="btn-next" id="pCheck" style="margin-top:10px;">cek jawaban</button>
+        </div>`;
+        renderPuzzleBank();
+        renderPuzzleJawaban();
+
+        document.getElementById('pCheck').onclick = () => {
+            const hasil = jawabanArr.map(item => item.word);
+            const benar = p.kalimat;
+            if (JSON.stringify(hasil) === JSON.stringify(benar)) {
+                document.getElementById('pFeedback').className = 'puzzle-feedback ok';
+                document.getElementById('pFeedback').textContent = '✅ bener! pesan tersampaikan 🎉';
+                if (pIdx < puzzles.length - 1) {
+                    setTimeout(() => { pIdx++; startPuzzle(); }, 1000);
+                } else {
+                    chapterFlags[5] = true;
+                    const btn = document.getElementById('pCheck');
+                    btn.textContent = 'lanjut ➜';
+                    btn.onclick = () => nextChapter();
+                }
+            } else {
+                document.getElementById('pFeedback').className = 'puzzle-feedback no';
+                let betul = 0;
+                hasil.forEach((w, i) => { if (benar[i] && w === benar[i]) betul++; });
+                document.getElementById('pFeedback').textContent = `belum pas — ${betul}/${benar.length} kata di posisi bener, coba lagi 💭`;
+            }
+        };
+    }
+
+    function renderPuzzleBank() {
+        const el = document.getElementById('kataBank'); if (!el) return;
+        el.innerHTML = '';
+        bankArr.forEach((item, bi) => {
+            const chip = document.createElement('div');
+            chip.className = 'kata-chip' + (item.used ? ' used' : '');
+            chip.textContent = item.word;
+            chip.onclick = () => {
+                if (item.used) return;
+                bankArr[bi].used = true;
+                jawabanArr.push({ word: item.word, bankIdx: bi });
+                renderPuzzleBank();
+                renderPuzzleJawaban();
+            };
+            el.appendChild(chip);
+        });
+    }
+
+    function renderPuzzleJawaban() {
+        const el = document.getElementById('jawabanArea'); if (!el) return;
+        el.innerHTML = '';
+        if (jawabanArr.length === 0) {
+            el.innerHTML = '<span style="color:#4a2424;font-size:0.7rem;">klik kata di bawah untuk menyusun kalimat</span>';
+            return;
+        }
+        jawabanArr.forEach((item, ji) => {
+            const chip = document.createElement('div');
+            chip.className = 'jawaban-kata';
+            chip.textContent = item.word;
+            chip.onclick = () => {
+                bankArr[item.bankIdx].used = false;
+                jawabanArr.splice(ji, 1);
+                renderPuzzleBank();
+                renderPuzzleJawaban();
+            };
+            el.appendChild(chip);
+        });
+    }
+
+    startPuzzle();
+}
+
+/* ENVELOPE LETTER */
+function renderEnvelopeLetter(app) {
+    let opened = false;
+    app.innerHTML=`
+    <div class="card fade-in">
+      <div class="progress-container">
+        <div class="progress-bar-bg"><div class="progress-fill"></div></div>
+        <div class="step-text"><span>7/11</span><i class="fas fa-envelope"></i></div>
+      </div>
+      <div class="envelope" id="envelopeBtn">
+        <i class="fas fa-envelope" style="font-size:2.5rem;"></i>
+        <span style="display:block;margin-top:6px;">klik untuk membuka surat</span>
+      </div>
+      <div id="letterContent" class="letter-content hidden" style="font-size:0.8rem;line-height:1.65;color:#f2dbdb;">
+        hai, haha ini tuh kaya surat gitu sayang aku buat. lucu kan? aku nih yang punya ide dari halaman pertama sampe halaman terakhir ini masih halaman 7 sih, masih ada 4 halaman lagi yang perlu kamu coba dan kamu baca isinya. isinya sesuai dengan isi hati ku yang cinta sama kamu sayangku, belahan jiwaku, oksigenku. oke, terlalu hiperbola. dari game yang barusan kamu main tadi, udah faham kan aku mau nyampein apa ke kamu? ya, you're enough so don't be sad, always remember that u matter, everything is going to be okay, jadi kamu jangan pernah ngerasa kurang sama diri kamu sendiri, kamu harus sayang sama diri kamu sendiri sebelum kamu sayang sama orang-orang di sekitar kamu, seorang psikolog harus cinta sama diri nya sendiri dulu kan ya sebelum dengerin cerita para pasiennya? kalau kamu ngerasa bad day, berantakan, buruk inget kamu selalu punya aku di sebelah mu, di belakang mu buat selalu support kamu. lakuin apa yang kamu mau sayang, dan ambil keputusan yang menurut kamu benar aku bakalan selalu support, kapan pun dan apapun itu aku selalu support kamu. the world needs more empathetic souls like u, i pray that god guides your path, gives u strength through all the studies, and grants your dream of becoming a wonderful psychologist.
+      </div>
+      <button class="btn-next hidden" id="envelopeNext">lanjut</button>
+    </div>`;
+    document.getElementById('envelopeBtn').onclick=()=>{
+        document.getElementById('letterContent').classList.remove('hidden');
+        opened=true;
+        document.getElementById('envelopeNext').classList.remove('hidden');
+    };
+    document.getElementById('envelopeNext').onclick=()=>{ if(opened){ chapterFlags[6]=true; nextChapter(); } };
+}
+
+/* GAME KLIK LOVE */
+function renderClickLoveGame(app) {
+    let score = 0;
+    let targetCount = 5;
+    let gameActive = true;
+    
+    function createFlyingLove(x, y) {
+        for (let i = 0; i < 3; i++) {
+            setTimeout(() => {
+                const offsetX = (Math.random() - 0.5) * 60;
+                const love = document.createElement('div');
+                love.className = 'flying-love';
+                love.innerHTML = ['❤️', '💖', '💗', '💓', '💕'][Math.floor(Math.random() * 5)];
+                love.style.left = (x + offsetX) + 'px';
+                love.style.top = y + 'px';
+                document.body.appendChild(love);
+                setTimeout(() => love.remove(), 1500);
+            }, i * 50);
+        }
+    }
+    
+    app.innerHTML = `
+    <div class="card fade-in">
+      <div class="progress-container">
+        <div class="progress-bar-bg"><div class="progress-fill"></div></div>
+        <div class="step-text"><span>8/11</span><i class="fas fa-heart"></i></div>
+      </div>
+      <p style="text-align:center;font-size:0.9rem;color:#f0cfcf;margin-bottom:12px;">💕 klik love-nya, nanti love-love kecil akan bertebaran 💕</p>
+      <div class="click-game-area">
+        <div class="click-target" id="clickButton">❤️ KLIK AKU ❤️</div>
+        <div class="click-score" id="clickScore">0 / 5</div>
+      </div>
+      <button class="btn-next hidden" id="clickNext">lanjut</button>
+    </div>`;
+    
+    const btn = document.getElementById('clickButton');
+    const scoreDiv = document.getElementById('clickScore');
+    const nextBtn = document.getElementById('clickNext');
+    
+    btn.onclick = (e) => {
+        if (!gameActive) return;
+        const rect = btn.getBoundingClientRect();
+        const x = rect.left + rect.width / 2;
+        const y = rect.top + rect.height / 2;
+        createFlyingLove(x, y);
+        score++;
+        scoreDiv.innerText = `${score} / ${targetCount}`;
+        btn.style.transform = 'scale(0.95)';
+        setTimeout(() => btn.style.transform = 'scale(1)', 100);
+        if (score >= targetCount) {
+            gameActive = false;
+            btn.style.opacity = '0.5';
+            btn.style.pointerEvents = 'none';
+            nextBtn.classList.remove('hidden');
+        }
+    };
+    document.getElementById('clickNext').onclick = () => { if (score >= targetCount) { chapterFlags[7]=true; nextChapter(); } };
+}
+
+/* GALLERY */
+function renderGalleryScroll(app) {
+    app.innerHTML=`
+    <div class="card fade-in">
+      <div class="progress-container">
+        <div class="progress-bar-bg"><div class="progress-fill"></div></div>
+        <div class="step-text"><span>9/11</span><i class="fas fa-images"></i></div>
+      </div>
+      <p style="text-align:center;">gallery kenangan — geser untuk lihat foto</p>
+      <div class="gallery-scroll" id="galleryScroll"></div>
+      <button class="btn-next hidden" id="galleryNext">lanjut</button>
+    </div>`;
+    const gallery=document.getElementById('galleryScroll');
+    galleryPhotos.forEach(photo=>{
+        const item=document.createElement('div');
+        item.className='gallery-item';
+        item.innerHTML=`<img src="${photo.url}" alt="kenangan"><div class="gallery-caption">${photo.caption}</div>`;
+        gallery.appendChild(item);
+    });
+    setTimeout(()=>document.getElementById('galleryNext').classList.remove('hidden'),500);
+    document.getElementById('galleryNext').onclick=()=>{ chapterFlags[8]=true; nextChapter(); };
+}
+
+/* FINAL LETTER */
+function renderFinalLetter(app) {
+    app.innerHTML=`
+    <div class="card fade-in">
+      <div class="progress-container">
+        <div class="progress-bar-bg"><div class="progress-fill"></div></div>
+        <div class="step-text"><span>10/11</span><i class="fas fa-envelope-open-heart"></i></div>
+      </div>
+      <div class="love-letter-full">
+        <i class="fas fa-heart" style="color:#e68a8a;"></i> for u, happy mensive.<br><br>
+        gak kerasa ya, udah 3 bulan kita bareng lewat sejauh ini. rasanya baru kemaren kita mulai semuanya, tapi setiap hari yang aku lewati sama kamu selalu berharga. aku bener-bener bersyukur dan bahagia karena ada kamu yang selalu nemenin aku, dengerin cerita aku, dan bikin hari-hari aku yang tadinya biasa aja jadi kerasa jauh lebih berwarna. honestly, being with u feels so complete. If my life were lines of code, you are definitely the CSS that adds beautiful colors and makes everything look perfect.<br><br>
+        makasih ya udah selalu sabar menghadapi aku, ego aku dan makasih karena udah mencintai aku dengan cara kamu yang luar biasa. thank you for your warm heart and for always being the best listener. I always know you're going to make an amazing psychologist someday.<br><br>
+        di mensive yang ke-3 bulan ini, doa aku masih sama semoga kita bisa terus bareng-bareng, saling jaga, saling ngertiin, dan makin dewasa dalam ngejalanin hubungan ini. I pray that God always guides your path, clears any obstacles in your studies, and brings you closer to your dreams. please remember that you are more than enough, so don't be sad or doubt yourself, okay? tolong jangan pernah bosen sama aku ya? I love you more than words can say, selalu.
+      </div>
+      <button class="btn-next" id="finalLetterBtn">ke penutup</button>
+    </div>`;
+    document.getElementById('finalLetterBtn').onclick=()=>{ chapterFlags[9]=true; nextChapter(); };
+}
+
+/* CLOSING */
+function renderClosing(app) {
+    app.innerHTML=`
+    <div class="card fade-in" style="text-align:center;">
+      <div class="progress-container">
+        <div class="progress-bar-bg"><div class="progress-fill"></div></div>
+        <div class="step-text"><span>11/11</span><i class="fas fa-heart"></i></div>
+      </div>
+      <i class="fas fa-heart" style="font-size:3rem;color:#e68a8a;margin:16px 0;display:block;"></i>
+      <p style="color:#f0cfcf;">selamat menyelesaikan 11 halaman ini, rara.</p>
+      <p style="margin-top:12px;color:#ffffff;">280226 — selamanya kode kita.</p>
+      <div class="small-note">— dari sinanfatih yang ganteng mirip zayn malik</div>
+    </div>`;
+    chapterFlags[10]=true;
+}
+
+renderChapter();
+</script>
+</body>
+</html>
